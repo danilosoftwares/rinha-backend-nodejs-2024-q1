@@ -5,3 +5,5 @@ npm_debug.log
 .env
 dockerfile
 docker-compose.yml
+executar-teste-local.sh
+load-test/
