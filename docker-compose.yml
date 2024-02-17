@@ -15,7 +15,7 @@ services:
       deploy:
         resources:
           limits:
-            cpus: "0.2"
+            cpus: "0.1"
             memory: "50MB"          
 
   postgres:
@@ -29,7 +29,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.7"
+          cpus: "0.6"
           memory: "300MB"      
 
   api01: &api
@@ -52,7 +52,7 @@ services:
       deploy:
         resources:
           limits:
-            cpus: "0.3"
+            cpus: "0.2"
             memory: "100MB"                    
   api02:
     <<: *api 
