@@ -1,35 +1,46 @@
 
 module.exports = {
 
-  validate: (method, url) => {
-    try{
+  validate: (method, url, onSuccess, onError) => {
+    try {
       if (method !== "POST" && method !== "GET") {
-        return { status: 405, error: 'Método não suportado!' };
+        onError(405, 'Método não suportado!');
       } else {
         const regex = /^\d+$/;
         const separate = url.split('/');
         const total = separate.length;
         if (total !== 4 || (separate[1].toLowerCase() !== "clientes" || (!(method === "POST" && separate[3].toLowerCase() === "transacoes") && !(method === "GET" && separate[3].toLowerCase() === "extrato")))) {
-          return { status: 404, error: 'Rota inválida!', id:undefined };
+          onError(404, 'Rota inválida!');
         } else if (!regex.test(separate[2])) {
-          return { status: 404, error: 'Id de Cliente inválido!', id:undefined };
+          onError(404, 'Id de Cliente inválido!');
+        } else {
+          onSuccess(separate[2]);
         }
-        return { status: 200, error: undefined, id:separate[2] };
       }
-    } catch(e) {
-      return { status: 500, error: e, id:undefined };
+    } catch (e) {
+      onError(500, e);
     }
   },
 
-  validateCreate: (body) => {
-    try{    
+  validateCreate: (body, onSuccess, onError) => {
+    try {
       const payload = JSON.parse(body);
-      if(payload.tipo.toLowerCase()!=="c"&&payload.tipo.toLowerCase()!=="d"){
-        return { status: 400, error: "Atributo tipo inválido!", content:payload };
+      if (payload.tipo.toLowerCase() !== "c" && payload.tipo.toLowerCase() !== "d") {
+        onError(422, "Atributo tipo inválido!");
+      } else if (!payload.descricao || (payload.descricao.length > 10 || payload.descricao.length === 0)) {
+        onError(422, "Atributo descricao inválido!");
+      } else {
+        const regex = /^\d+$/;
+        const text = payload.valor.toString();
+        const valid = regex.test(text) && !text.includes(".");
+        if (!valid) {
+          onError(422, "Atributo valor inválido!");
+        } else {
+          onSuccess(payload);
+        }
       }
-      return { status: 200, error: undefined, content:payload };
-    } catch(e) {
-      return { status: 500, error: e, content:undefined };
+    } catch (e) {
+      onError(500, e);
     }
   },
 

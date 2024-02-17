@@ -22,9 +22,9 @@ const getExtractFromClient = (id, callback) => {
     } else {
       callback(200, 
         {saldo:{
-          total:result.rows[0]["limit_use"],
+          total:result.rows[0]["balance"],
           data_extrato:new Date().toISOString(),
-          limite:result.rows[0]["balance"],
+          limite:result.rows[0]["limit_use"],
         }, 
         ultimas_transacoes:result.rows.slice(1).map((item)=>{
           return {valor:item.valor,tipo:item.tipo,descricao:item.descricao,realizado_em:item.realizado_em};
