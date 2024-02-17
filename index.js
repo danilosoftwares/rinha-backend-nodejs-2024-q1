@@ -13,23 +13,22 @@ const server = http.createServer((req, res) => {
             req.on('data', (chunk) => {
                 body += chunk;
             });
-            req.on('end', async () => {
+            req.on('end', () => {
                 validateCreate(body,(content)=>{
                     create(id, content, (status, message) => {
                         res.writeHead(status, contentType).end(JSON.stringify(message));
                     });
                 },(status, error)=>{
-                    return res.writeHead(status, contentType).end(JSON.stringify({ error: error }));
+                    res.writeHead(status, contentType).end(JSON.stringify({ error: error }));
                 });          
             });
-            return;
         } else {
             extract(id, (status, message) => {
                 res.writeHead(status, contentType).end(JSON.stringify(message));
             });
         }
     }, (status, error) => {
-        return res.writeHead(status, contentType).end(JSON.stringify({ error: error }));
+        res.writeHead(status, contentType).end(JSON.stringify({ error: error }));
     });
 });
 
