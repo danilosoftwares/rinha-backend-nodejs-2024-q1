@@ -1,13 +1,14 @@
 const Connector = require('./connector');
 
+const infoClient =  `
+select limit_use, balance
+from clients 
+where id  = $1
+FOR UPDATE
+`;
+
 const getExtractFromClient = async (id, callback) => {
   Connector.tx(async t => {  
-    const infoClient =  `
-    select limit_use, balance
-    from clients 
-    where id  = $1
-    FOR UPDATE
-  `;
     try{
       const result = await t.query(infoClient, [id]);    
       if (result.length===0){
@@ -42,12 +43,25 @@ const changeBalance = async (transaction, callback) => {
   const { id, value, credit, description } = transaction;
   Connector.tx(async t => {
     try{
-      const results = await t.query(`update clients set balance = balance ${credit ? '+' : '-'} $1 where id = $2  RETURNING *`,[value, id]);
-      if (!results.length) {
-        callback(404, 'Cliente não encontrado!');
+      const exists = await t.query(infoClient, [id]);         
+      if (credit){        
+        if (!exists.length) {
+          callback(404, 'Cliente não encontrado!');
+        } else {  
+          callback(200, { limite: exists[0].limit_use, saldo: exists[0].balance + value });           
+          t.query(`update clients set balance = balance ${credit ? '+' : '-'} $1 where id = $2  RETURNING *`,[value, id]);           
+          t.query(`insert into transactions (id_client, credit_debit, amount, description) values ( $1, $2, $3, $4)`, [id, credit ? "c" : "d", value, description?description.substring(0,10):'']);
+        }
       } else {
-        callback(200, { limite: results[0].limit_use, saldo: results[0].balance });      
-        t.query(`insert into transactions (id_client, credit_debit, amount, description) values ( $1, $2, $3, $4)`, [id, credit ? "c" : "d", value, description?description.substring(0,10):'']);
+        if (!exists.length) {
+          callback(404, 'Cliente não encontrado!');
+        } else if (((exists[0].balance - value) < (exists[0].limit_use * -1))) {
+          callback(422, 'Saldo insuficiente!');    
+        } else {
+          callback(200, { limite: exists[0].limit_use, saldo: exists[0].balance - value });        
+          t.query(`update clients set balance = balance ${credit ? '+' : '-'} $1 where id = $2  RETURNING *`,[value, id]);
+          t.query(`insert into transactions (id_client, credit_debit, amount, description) values ( $1, $2, $3, $4)`, [id, credit ? "c" : "d", value, description?description.substring(0,10):'']);        
+        }
       }
     }catch(e){
       if (e) {
