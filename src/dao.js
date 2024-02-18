@@ -2,31 +2,33 @@ const Connector = require('./connector');
 
 const getExtractFromClient = async (id, callback) => {
   Connector.tx(async t => {  
-    const sql = `
-      select limit_use, 0 valor, '' tipo, '' descricao,null realizado_em, balance
-      from clients 
-      where id  = $1
-      union all
-      (
-        select 0 limit_use, amount as valor, credit_debit as tipo ,description as descricao, created_at as realizado_em,0 balance
-        from transactions
-        where id_client  = $1
-        order by created_at desc  
-        limit 10
-      )
-    `;
+    const infoClient =  `
+    select limit_use, balance
+    from clients 
+    where id  = $1
+    FOR UPDATE
+  `;
     try{
-      const result = await t.query(sql, [id]);    
+      const result = await t.query(infoClient, [id]);    
       if (result.length===0){
         callback(404, 'Cliente não encontrado!');
-      } else {        
+      } else {      
+        const infoTransactions = `
+          select amount as valor, credit_debit as tipo ,description as descricao, created_at as realizado_em
+          from transactions
+          where id_client  = $1
+          order by created_at desc  
+          limit 10
+          FOR UPDATE
+        `;       
+        const resultTransactions = await t.query(infoTransactions, [id]);      
         callback(200, 
           {saldo:{
             total:result[0]["balance"],
             data_extrato:new Date().toISOString(),
             limite:result[0]["limit_use"],
           }, 
-          ultimas_transacoes:result.slice(1).map((item)=>{
+          ultimas_transacoes:resultTransactions.map((item)=>{
             return {valor:item.valor,tipo:item.tipo,descricao:item.descricao,realizado_em:item.realizado_em};
           })});         
       }

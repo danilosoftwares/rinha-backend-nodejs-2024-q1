@@ -10,6 +10,7 @@ const Connector = pgp({
   host: process.env.POSTGRES_HOST,
   database: process.env.POSTGRES_DATABASE,
   port: 5432,
+  max:30,
 });
 
 
