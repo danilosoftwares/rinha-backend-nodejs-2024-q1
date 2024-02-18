@@ -11,9 +11,9 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - inner-network      
+      - default      
     volumes:      
-      - ./database/postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
+      - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
     command: postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf      
     deploy:
       resources:
@@ -36,7 +36,7 @@ services:
       depends_on:
         - postgres   
       networks:
-        - inner-network           
+        - default           
       deploy:
         resources:
           limits:
@@ -49,7 +49,7 @@ services:
     image: nginx
     container_name: nginx
     volumes:
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - '9999:9999'
     depends_on:
@@ -62,6 +62,6 @@ services:
           memory: '50MB'
 
 networks:
-  inner-network:
+  default:
     driver: bridge
     name: my-network    

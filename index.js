@@ -6,6 +6,11 @@ const PORT = 3000;
 const contentType = { 'Content-Type': 'application/json', };
 
 const server = http.createServer((req, res) => {
+    req.setTimeout(4*6*10000, () => {
+        res.writeHead(500, contentType);
+        res.end('Request timed out');
+        req.destroy();
+    });
     const { method, url } = req;
     validate(method, url, (id) => {
         if (method === 'POST') {
