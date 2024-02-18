@@ -1,10 +1,10 @@
-const { Pool } = require('pg');
+const pgp = require('pg-promise')();
 const fs = require('fs');
 const path = require('path');
 
 require('dotenv').config();
 
-const Connector = new Pool({
+const Connector = pgp({
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   host: process.env.POSTGRES_HOST,
