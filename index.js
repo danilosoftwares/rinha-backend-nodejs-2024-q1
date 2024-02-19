@@ -6,7 +6,7 @@ const PORT = 3000;
 const contentType = { 'Content-Type': 'application/json', };
 
 const server = http.createServer((req, res) => {
-    req.setTimeout(4*6*10000, () => {
+    req.setTimeout(360000, () => {
         res.writeHead(500, contentType);
         res.end('Request timed out');
         req.destroy();
@@ -36,6 +36,10 @@ const server = http.createServer((req, res) => {
         res.writeHead(status, contentType).end(JSON.stringify({ error: error }));
     });
 });
+
+server.on('error', (err) => {
+    console.error('Erro no servidor:', err.message);
+  });
 
 server.listen(PORT, () => {
     console.log(`Servidor escutando na porta ${PORT}`);

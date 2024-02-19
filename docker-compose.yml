@@ -24,7 +24,12 @@ services:
   api01: &api
       build:
           context: .
-      restart: unless-stopped          
+      restart: unless-stopped    
+      ulimits:
+        nproc: 1000000
+        nofile:
+          soft: 1000000
+          hard: 1000000            
       environment:
           POSTGRES_USER: ${POSTGRES_USER}
           POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
