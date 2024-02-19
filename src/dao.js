@@ -20,7 +20,6 @@ const getExtractFromClient = async (id, callback) => {
           where id_client  = $1
           order by created_at desc  
           limit 10
-          FOR UPDATE
         `;
         const resultTransactions = await t.query(infoTransactions, [id]);
         callback(200,
