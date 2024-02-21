@@ -24,7 +24,7 @@ module.exports = {
 
   validateCreate: (body, onSuccess, onError) => {
     try {
-      const payload = JSON.parse(body);
+      const payload = body;
       if (payload.tipo.toLowerCase() !== "c" && payload.tipo.toLowerCase() !== "d") {
         onError(422, "Atributo tipo inválido!");
       } else if (!payload.descricao || (payload.descricao.length > 10 || payload.descricao.length === 0)) {
