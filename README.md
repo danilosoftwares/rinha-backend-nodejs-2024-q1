@@ -5,3 +5,6 @@ O Projeto contem:
 - `nginx` como load balancer
 - `postgres` como banco de dados
 - `nodejs` para api 
+
+Resultado Final
+![](/result/final-result.jpg)
