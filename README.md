@@ -2,11 +2,11 @@
 
 ## The "backend rinha" is a challenge for backends to develop banking software that will be tested extensively and discover the software's resilience and resistance capabilities.
 
-Esse projeto foi desenvolvido em nodejs
-O Projeto contem:
-- `nginx` como load balancer
-- `postgres` como banco de dados
-- `nodejs` para api 
+This project was developed in nodejs
+The Project contein:
+- `nginx` as load balancer
+- `postgres` as banco de dados
+- `nodejs` for api 
 
-Resultado Final
+Final Result
 ![](/result/final-result.jpg)
