@@ -8,5 +8,8 @@ The Project contein:
 - `postgres` as banco de dados
 - `nodejs` for api 
 
+Flow Flux
+![](/flux.png)
+
 Final Result
 ![](/result/final-result.jpg)
